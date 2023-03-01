@@ -62,9 +62,9 @@ const server = new aero.Server({
   port: 3000,
   bind: '0.0.0.0',
   debug: true
-  threadding: {
+  threading: {
     available: 2,
-    automatic: false,
+    automatic: true,
     sync: 20000
   }
 })
@@ -76,6 +76,7 @@ server.routes
   .add('GET', '/<username>', (ctx) => { // This is a placeholder, basically /anything will match to this except if there is a static route
     ctr.print('Hello ${ctx.params.get('username')}! How are you?')
   })
+  .redirect('/cool', 'https://rjansen.de') // Redirect from /cool to https://rjansen.de
   .prefix('/api')
     .add('GET', '/', (ctx) => {
       ctx.print('You are currently on /api even though the method says / because of the Prefix')

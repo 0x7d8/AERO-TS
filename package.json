@@ -1,6 +1,6 @@
 {
   "name": "aero-ts",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Easy and Lightweight Way to create a Web Server",
   "module": "lib/esm/index.js",
   "main": "lib/cjs/index.js",

@@ -112,9 +112,8 @@ export default class HttpServer {
 
   private async handleWorkerMessage(infos: any) {
     switch (infos.type) {
-      case "threads::new":
-        if (this.options.threading.maximum > Object.keys(cluster.workers).length) cluster
-          .fork()
+      case "thread::new":
+        if (this.options.threading.maximum > Object.keys(cluster.workers).length) cluster.fork()
           .on('message', (data) => this.handleWorkerMessage(data))
           .send({ type: 'start', data: { options: this.options, routes: this.serializedRoutes } })
         else console.log(`Maximum Active Threads reached! (${Object.keys(cluster.workers).length} / ${this.options.threading.maximum})`)
@@ -130,6 +129,7 @@ export default class HttpServer {
         }
 
         cluster.workers[infos.worker].send({ type: 'response', data: { rqx: infos.data.rqx } })
+        break
 
       case "route::cache":
         this.cached.routes[infos.path] = infos.data

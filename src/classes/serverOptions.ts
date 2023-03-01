@@ -50,7 +50,7 @@ export interface Options {
 		*/ available?: number
 		/**
 		 * Whether to create a new Thread on each Request temporarily
-		 * @default false
+		 * @default true
 		 * @since 0.1.0
 		*/ automatic?: boolean
 		/**
@@ -60,7 +60,7 @@ export interface Options {
 		*/ sync?: number
 		/**
 		 * The Maximum Amount of Threads to start automatically
-		 * @default 8
+		 * @default 16
 		 * @since 0.1.0
 		*/ maximum?: number
 	}
@@ -109,9 +109,9 @@ export default class ServerOptions {
 				certFile: '/ssl/cert/path'
 			}, threading: {
 				available: 2,
-				automatic: false,
+				automatic: true,
 				sync: 5000,
-				maximum: 8
+				maximum: 16
 			}, port: 2023,
 			bind: '0.0.0.0',
 			debug: false,

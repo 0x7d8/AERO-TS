@@ -20,7 +20,6 @@ import handleHttpRequest from "./functions/handleHttpRequest"
 import handleWsRequest from "./functions/handleWsRequest"
 
 let server: http.Server
-
 process.on('message', (infos: any) => {
   switch (infos.type) {
     case "start":
@@ -51,8 +50,8 @@ process.on('message', (infos: any) => {
       // Start Server
       server = (process.options.https.enabled ? https as any : http as any).createServer(httpOptions)
 
-      server.on('request', (req, res) => handleHttpRequest({ req, res }))
-      server.on('upgrade', (req, soc, head) => handleWsRequest({ req, soc, head }))
+      server.on('request', async(req, res) => await handleHttpRequest({ req, res }))
+      server.on('upgrade', async(req, soc, head) => await handleWsRequest({ req, soc, head }))
 
       server.listen(process.options.port, process.options.bind)
       if (process.options.debug) console.log(`Thread ${cluster.worker.id} (${process.pid}): Recieved start event`)

@@ -15,7 +15,7 @@ export interface Props {
 }
 
 export default async function handleHttpRequest({ req, res }: Props) {
-  if (process.options.threading.automatic) process.send({ type: 'threads::new' })
+  if (process.options.threading.automatic) process.send({ type: 'thread::new' })
   if (process.options.debug) console.log(`Thread ${cluster.worker.id} (${process.pid}) Got Request: ${req.method} ${req.url}`)
   process.send({ type: 'stats::all', data: { requests: 1, network: { in: 0, out: 0 } } })
 
@@ -108,12 +108,13 @@ export default async function handleHttpRequest({ req, res }: Props) {
       res.write(data, 'binary')
     })
 
-    process.on('message', (infos: any) => {
+    const handleResponseMessage = (infos: any) => {
       if (infos.type !== 'response') return
       rqx = infos.data.rqx
 
-      compression.end(rqx.content, 'utf8')
-    })
+      compression.end(rqx.content)
+      process.removeListener('message', handleResponseMessage)
+    }; process.on('message', handleResponseMessage)
 
     /*if (fetchUrl) {
       try {

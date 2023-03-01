@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "CommonJS",
+    "moduleResolution": "Node16",
+    "lib": ["ES2021"],
+    "pretty": false,
+    "resolveJsonModule": true,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "target": "ES2018",
+    "outDir": "lib/typings",
+  }, "include": [
+    "src/**/*"
+  ]
+}

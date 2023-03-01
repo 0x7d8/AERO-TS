@@ -37,6 +37,7 @@ export default function generateRequestContext({ rqx, stats, client, headers, pa
     }, print(data) {
       switch (typeof data) {
         case "object":
+          rqx.headers['Content-Type'] = 'application/json'
           rqx.content = JSON.stringify(data)
           break
 
@@ -51,10 +52,6 @@ export default function generateRequestContext({ rqx, stats, client, headers, pa
           rqx.content = data.toString()
           break
       }
-
-      return context
-    }, printFetch(url) {
-      rqx.content = `ls::internal::fetch::${url}`
 
       return context
     },

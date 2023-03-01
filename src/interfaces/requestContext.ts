@@ -23,10 +23,6 @@ export interface HttpRequestContext {
    * Print Data to the Client
    * @since 0.1.0
   */ print: (data: printTypes) => HttpRequestContext
-  /**
-   * Print Content of a URL to the Client
-   * @since 0.1.0
-  */ printFetch: (url: string) => HttpRequestContext
 
   /**
    * Client Infos

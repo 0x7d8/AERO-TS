@@ -19,7 +19,7 @@ export default class Router {
     /** The Prefix to make this Router available on */ prefix?: string
   ) {
     this.data = {
-      prefix: parsePath(prefix || '/'),
+      prefix: parsePath(prefix || '/', true),
       subRouters: []
     }
 
@@ -38,7 +38,7 @@ export default class Router {
     /** The Path of the Route */ path: string,
     /** The Code to run on the Request */ run: (ctx: HttpRequestContext) => Promise<unknown> | unknown
   ) {
-    path = this.data.prefix + parsePath(path, true)
+    path = this.data.prefix + parsePath(path)
 
     // Check if Route contains Parameters
     let storePart: 'static' | 'param' = 'static'
@@ -57,12 +57,28 @@ export default class Router {
   }
 
   /**
+   * Add a Redirect to the router
+   * @since 0.2.0
+  */ redirect(
+    /** The Path of the Route */ path: string,
+    /** The URL to Redirect to */ url: string
+    ) {
+      path = this.data.prefix + parsePath(path)
+  
+      // Store Route
+      this.routes.static['GET' + path] = {
+        method: 'GET',
+        run: (ctx) => ctx.redirect(url)
+      }; return this
+    }
+
+  /**
    * Add a Subrouter with prefix
    * @since 0.1.0
   */ prefix(
     /** The Prefix to add */ prefix: string,
   ) {
-    const index = this.data.subRouters.push(new Router(this.data.prefix + prefix))
+    const index = this.data.subRouters.push(new Router(this.data.prefix + parsePath(prefix)))
     return this.data.subRouters[index - 1]
   }
 

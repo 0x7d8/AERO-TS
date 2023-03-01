@@ -1,3 +1,4 @@
+import { Stats } from "../classes/httpServer"
 import { UrlWithStringQuery } from "url"
 import ValueCollection from "../classes/valueCollection"
 import { RequestMethod } from "./route"
@@ -36,10 +37,6 @@ export interface HttpRequestContext {
      * @since 0.1.0
     */ readonly userAgent: string
 		/**
-     * The HTTP Version that the Client is using
-     * @since 0.1.0
-    */ readonly httpVersion: string
-		/**
      * The Port that the Client is using
      * @since 0.1.0
     */ readonly port: number
@@ -52,22 +49,27 @@ export interface HttpRequestContext {
   /**
    * View the Request Body
    * @since 0.1.0
-  */ body: string | Record<string, any>
+  */ readonly body: string | Record<string, any>
+
+  /**
+   * View the Server Stats
+   * @since 0.2.0
+  */ readonly stats: Stats
 
   /**
    * View the Request URL
    * @since 0.1.0
-  */ url: UrlWithStringQuery & { method: RequestMethod }
+  */ readonly url: UrlWithStringQuery & { method: RequestMethod }
   /**
    * View all Request Parameters
    * @since 0.1.0
-  */ params: ValueCollection<string, string>
+  */ readonly params: ValueCollection<string, string>
   /**
    * View all Request Headers
    * @since 0.1.0
-  */ headers: ValueCollection<Lowercase<string>, string>
+  */ readonly headers: ValueCollection<Lowercase<string>, string>
   /**
    * View all Request Parameters
    * @since 0.1.0
-  */ queries: ValueCollection<string | number, string | string[]>
+  */ readonly queries: ValueCollection<string | number, string | string[]>
 }

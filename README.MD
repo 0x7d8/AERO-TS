@@ -73,6 +73,9 @@ server.routes
   .add('GET', '/', (ctx) => {
     ctx.print('Hello! Im running on the aero-ts beta...')
   })
+  .add('GET', '/<username>', (ctx) => { // This is a placeholder, basically /anything will match to this except if there is a static route
+    ctr.print('Hello ${ctx.params.get('username')}! How are you?')
+  })
   .prefix('/api')
     .add('GET', '/', (ctx) => {
       ctx.print('You are currently on /api even though the method says / because of the Prefix')

@@ -5,18 +5,22 @@ export interface Options {
 		/**
 		 * Whether recieving HTTP Bodies is enabled
 		 * @default true
+		 * @since 0.1.0
 		*/ enabled?: boolean
 		/**
 		 * Whether to try parsing the HTTP Body as JSON
 		 * @default true
+		 * @since 0.1.0
 		*/ parse?: boolean
 		/**
 		 * The Maximum Size of the HTTP Body in MB
 		 * @default 5
+		 * @since 0.1.0
 		*/ maxSize?: number
 		/**
 		 * The Message that gets sent when the HTTP Body Size is exceeded
 		 * @default "Payload too large"
+		 * @since 0.1.0
 		*/ message?: any
 	}
 
@@ -24,64 +28,68 @@ export interface Options {
 		/**
 		 * Whether HTTPS is enabled
 		 * @default false
+		 * @since 0.1.0
 		*/ enabled?: boolean
 		/**
 		 * The Key File Path
 		 * @default '/ssl/key/path'
+		 * @since 0.1.0
 		*/ keyFile?: string
 		/**
 		 * The Cert File Path
 		 * @default '/ssl/cert/path'
+		 * @since 0.1.0
 		*/ certFile?: string
 	}
 
-	/** Threadding Settings */ threadding?: {
+	/** Threadding Settings */ threading?: {
 		/**
 		 * The Amount of Threads that will always be available
 		 * @default 2
+		 * @since 0.1.0
 		*/ available?: number
 		/**
 		 * Whether to create a new Thread on each Request temporarily
 		 * @default false
+		 * @since 0.1.0
 		*/ automatic?: boolean
 		/**
 		 * The Interval in which to sync the Threads
 		 * @default 5000
+		 * @since 0.1.0
 		*/ sync?: number
 		/**
 		 * The Maximum Amount of Threads to start automatically
 		 * @default 8
+		 * @since 0.1.0
 		*/ maximum?: number
 	}
 
 	/**
 	 * Where the Server should start at
 	 * @default 2023
+	 * @since 0.1.0
 	*/ port?: number
 	/**
 	 * Where the Server should bind to
 	 * @default "0.0.0.0"
+	 * @since 0.1.0
 	*/ bind?: string
 	/**
 	 * Whether X-Forwarded-For will be shown as hostIp
 	 * @default false
+	 * @since 0.1.0
 	*/ proxy?: boolean
 	/**
 	 * Whether to log Debug messages
 	 * @default false
+	 * @since 0.1.0
 	*/ debug?: boolean
 	/**
 	 * Whether to Compress outgoing Data using gzip
 	 * @default 'none'
+	 * @since 0.1.0
 	*/ compression?: CompressTypes
-	/**
-	 * Whether all cors Headers will be set
-	 * @default false
-	*/ cors?: boolean
-	/**
-	 * Add X-Powered-By Header
-	 * @default true
-	*/ poweredBy?: boolean
 }
 
 export default class ServerOptions {
@@ -99,7 +107,7 @@ export default class ServerOptions {
 				enabled: false,
 				keyFile: '/ssl/key/path',
 				certFile: '/ssl/cert/path'
-			}, threadding: {
+			}, threading: {
 				available: 2,
 				automatic: false,
 				sync: 5000,
@@ -108,9 +116,7 @@ export default class ServerOptions {
 			bind: '0.0.0.0',
 			debug: false,
       proxy: false,
-			compression: 'none',
-      cors: false,
-      poweredBy: true
+			compression: 'none'
     }, options)
   }
 

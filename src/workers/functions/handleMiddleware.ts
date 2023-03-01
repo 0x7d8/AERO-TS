@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "http"
-import generateRequestContext from "./generateRequestContext"
+import generateRequestContext from "../../functions/generateRequestContext"
 import InternalContext from "../../interfaces/internalContext"
 
 export interface Props {
@@ -11,11 +11,9 @@ export interface Props {
 }
 
 export default function handleMiddleware({ rqx, req, res, middleware }: Props) {
-  const ctx = generateRequestContext({ rqx, req, res, params: {} })
-
   const middlewareFunctions = []
   for (let index = 0; index < middleware.length; index++) {
-    middlewareFunctions.push(middleware[index].run(ctx))
+    middlewareFunctions.push(middleware[index].run())
   }
 
   return new Promise((resolve) => {

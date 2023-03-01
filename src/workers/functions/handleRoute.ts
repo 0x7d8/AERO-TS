@@ -1,25 +1,22 @@
-import { IncomingMessage, ServerResponse } from "http"
-import generateRequestContext from "./generateRequestContext"
-import { HttpRequestContext } from "../../interfaces/requestContext"
+import { IncomingMessage } from "http"
 import InternalContext from "../../interfaces/internalContext"
-import Route from "../../interfaces/route"
 
 export interface Props {
   rqx: InternalContext
   req: IncomingMessage
-  res: ServerResponse
 }
 
 export interface Return {
   found: boolean
-  route: Route | null
-  ctx: HttpRequestContext
+  type: string | null
+  key: string | null
+  params: Record<string, string>
 }
 
-export default function handleRoute({ rqx, req, res }: Props): Return {
+export default function handleRoute({ rqx, req }: Props): Return {
   let route = process.routes.static[req.method + rqx.url.path]
 
-  if (route) return { found: true, route, ctx: generateRequestContext({ rqx, req, res, params: {} }) }
+  if (route) return { found: true, type: 'static', key: (req.method + rqx.url.path), params: {} }
   else {
     const actualUrl = rqx.url.path.split('/')
     let params = {}
@@ -28,7 +25,7 @@ export default function handleRoute({ rqx, req, res }: Props): Return {
       if (!routeKey.startsWith(req.method)) continue
       const route = process.routes.param[routeKey]
 
-      const pathArray = routeKey.split('/')
+      const pathArray = routeKey.replace(req.method, '').split('/')
       let routeExists = false
 
       if (pathArray.length !== actualUrl.length) continue
@@ -46,10 +43,10 @@ export default function handleRoute({ rqx, req, res }: Props): Return {
         }
       }; if (routeExists) {
         process.send({ type: 'route::cache', path: rqx.url.pathname, data: { route, params }})
-        return { found: true, route, ctx: generateRequestContext({  rqx, req, res, params }) }
+        return { found: true, type: 'param', key: routeKey, params }
       }
     }
 
-    return { found: false, route: null, ctx: generateRequestContext({ rqx, req, res, params: {} }) }
+    return { found: false, type: null, key: null, params: {} }
   }
 }

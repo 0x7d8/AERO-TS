@@ -3,6 +3,8 @@ import cluster from "cluster"
 import ServerOptions, { Options } from "./serverOptions"
 import Route from "../interfaces/route"
 import Router from "./router"
+import generateRequestContext from "../functions/generateRequestContext"
+import handleErrorResponse from "../functions/handleErrorResponse"
 
 export interface Cache {
   routes: Record<string, { route: number, params: Record<string, string> }>
@@ -24,7 +26,7 @@ export interface Routes {
 
 export default class HttpServer {
   private serializedRoutes: Routes
-  private routes: Routes
+  public routes: Routes
   public options: Options
   public cached: Cache
   public stats: Stats
@@ -63,13 +65,13 @@ export default class HttpServer {
       for (const id in cluster.workers) {
         cluster.workers[id].send({ type: 'sync', data: { stats: this.stats, options: this.options, routes: this.serializedRoutes } })
       }
-    }, this.options.threadding.sync)
+    }, this.options.threading.sync)
   }
 
   async start() {
     if (cluster.isPrimary) {
       cluster.setupPrimary({ 
-        exec: __dirname + '/workers/http'
+        exec: __dirname + '/../workers/http'
       })
 
       this.routes = this.router.getRoutes()
@@ -82,7 +84,7 @@ export default class HttpServer {
         })
       })
 
-      for (let index = 0; index < this.options.threadding.available; index++) {
+      for (let index = 0; index < this.options.threading.available; index++) {
         cluster.fork()
           .on('message', (data) => this.handleWorkerMessage(data))
           .send({ type: 'start', data: { options: this.options, routes: this.serializedRoutes } })
@@ -108,15 +110,26 @@ export default class HttpServer {
   }
 
 
-  private handleWorkerMessage(infos: any) {
+  private async handleWorkerMessage(infos: any) {
     switch (infos.type) {
       case "threads::new":
-        if (this.options.threadding.maximum > Object.keys(cluster.workers).length) cluster
+        if (this.options.threading.maximum > Object.keys(cluster.workers).length) cluster
           .fork()
           .on('message', (data) => this.handleWorkerMessage(data))
           .send({ type: 'start', data: { options: this.options, routes: this.serializedRoutes } })
-        else console.log(`Maximum Active Threads reached! (${Object.keys(cluster.workers).length} / ${this.options.threadding.maximum})`)
+        else console.log(`Maximum Active Threads reached! (${Object.keys(cluster.workers).length} / ${this.options.threading.maximum})`)
         break
+
+      case "request::create":
+        const ctx = generateRequestContext({ ...infos.data, stats: this.stats })
+        try {
+          if (infos.found) await Promise.resolve(this.routes[infos.routeType][infos.route].run(ctx))
+          else await handleErrorResponse({ htx: this, rqx: infos.data.rqx, ctx, code: 404 })
+        } catch (err) {
+          await handleErrorResponse({ htx: this, rqx: infos.data.rqx, ctx, code: 500, err })
+        }
+
+        cluster.workers[infos.worker].send({ type: 'response', data: { rqx: infos.data.rqx } })
 
       case "route::cache":
         this.cached.routes[infos.path] = infos.data
